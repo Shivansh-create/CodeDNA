@@ -15,11 +15,12 @@ export async function fetchGithubRepos(username: string, token?: string) {
   };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  // Fetching up to 100 repos
-  const res = await fetch(
-    `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`,
-    { headers }
-  );
+  // If token is provided, we can fetch all repos (owner, collaborator, org member)
+  const endpoint = token 
+    ? `https://api.github.com/user/repos?affiliation=owner,collaborator,organization_member&per_page=100&sort=updated`
+    : `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`;
+
+  const res = await fetch(endpoint, { headers });
   if (!res.ok) throw new Error("Failed to fetch GitHub repos");
   return res.json();
 }

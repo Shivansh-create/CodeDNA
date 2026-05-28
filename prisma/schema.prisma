@@ -65,21 +65,23 @@ model AnalysisResult {
   userId           String   @unique
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
+  // High-level aggregates
   overallScore     Int
-  archetype        String
+  archetype        Json?    // { name: string, description: string, idealEnvironment: string }
   summary          String   @db.Text
-  explanation      String?  @db.Text
+  narrative        String?  @db.Text // "Holy shit, this platform actually understands..." narrative
   
+  // Specific technical scoring
   frontendScore    Int
   backendScore     Int
   devopsScore      Int
   architectureScore Int
   
-  strengths        String[]
-  weaknesses       String[]
-  careerRecommendations String[]
-  
-  futureTrajectory Json?    // Stores the future trajectory object
+  // Deep AI Insights
+  developerDna     Json?    // { technicalTraits: string[], workflowHabits: string[], strengths: string[], weaknesses: string[] }
+  evolutionTimeline Json?   // [{ year: number, phase: string, description: string }]
+  projectIntelligence Json? // [{ repoName: string, architectureNotes: string, scalability: string, score: number }]
+  careerIntelligence Json?  // { startupFit: number, enterpriseFit: number, roleRecommendations: string[], hiringSignals: string[] }
   
   rawGithubData    Json?    // Optional storage for raw fetched data
   

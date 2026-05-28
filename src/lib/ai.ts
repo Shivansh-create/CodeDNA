@@ -14,8 +14,9 @@ export async function processAnalysis(userId: string, username: string, updatePr
   await updateProgress("Analyzing developer patterns with AI...", 50);
 
   const prompt = `
-  Analyze the following GitHub developer data and generate a detailed engineering personality profile.
-  You are an expert technical recruiter and senior staff engineer evaluating a candidate.
+  You are an elite AI engineering profiler, decoding the precise "Developer DNA" of a software engineer based on their GitHub data.
+  Generate a deeply cinematic, psychological, and highly analytical profile.
+  The profile must sound like an AI uncovering their core engineering identity. 
 
   Data:
   - Repositories Count: ${githubData.reposCount}
@@ -26,8 +27,54 @@ export async function processAnalysis(userId: string, username: string, updatePr
   - Public Repos: ${githubData.profile.public_repos}
   - Top 15 Repos Intelligence (names, descriptions, topics, dates): ${JSON.stringify(githubData.repoIntelligence)}
 
-  You must deeply analyze their architecture sophistication, open source trajectory, and startup vs enterprise suitability.
-  Provide explanations for why you chose the archetype and scores.
+  Output MUST be a valid JSON object matching this exact schema:
+  {
+    "overallScore": number (0-100),
+    "archetype": {
+      "name": string (e.g., "Systems Architect", "Product Engineer", "Experimental Hacker"),
+      "description": string (Why they fit this),
+      "idealEnvironment": string (What kind of team/company they thrive in)
+    },
+    "summary": string (A professional summary of their engineering style),
+    "narrative": string (A cinematic, slightly edgy observation that starts with something like "Your repositories suggest..." or "You appear to thrive in...". Make it emotionally engaging and insightful. No generic statements. "Holy shit, this platform actually understands me" is the goal.),
+    "frontendScore": number (0-100),
+    "backendScore": number (0-100),
+    "devopsScore": number (0-100),
+    "architectureScore": number (0-100),
+    "developerDna": {
+      "technicalTraits": string[] (e.g., "Frontend Polish", "Rapid Prototyping", "Modular Architecture"),
+      "workflowHabits": string[],
+      "strengths": string[],
+      "weaknesses": string[]
+    },
+    "evolutionTimeline": [
+      {
+        "year": number,
+        "phase": string (e.g., "Learning Fundamentals", "Scaling Systems"),
+        "description": string
+      }
+    ],
+    "projectIntelligence": [
+      {
+        "repoName": string,
+        "architectureNotes": string,
+        "scalability": string,
+        "score": number (0-100)
+      }
+    ],
+    "careerIntelligence": {
+      "startupFit": number (0-100),
+      "enterpriseFit": number (0-100),
+      "roleRecommendations": string[],
+      "hiringSignals": string[]
+    }
+  }
+
+  CRITICAL INSTRUCTIONS FOR JSON OUTPUT:
+  1. Your response MUST be a 100% valid, parseable JSON object.
+  2. Do NOT wrap the output in markdown blocks (e.g. \`\`\`json). Output the raw JSON directly.
+  3. Do NOT include literal newline characters inside strings. Use \\n instead.
+  4. Ensure all double quotes inside strings are properly escaped as \\".
   `;
 
   const modelCandidates = [
@@ -48,9 +95,9 @@ export async function processAnalysis(userId: string, username: string, updatePr
         model: modelName,
         contents: prompt,
         config: {
-          responseMimeType: "text/plain",
-          maxOutputTokens: 800,
-          temperature: 0.3,
+          responseMimeType: "application/json",
+          maxOutputTokens: 8192,
+          temperature: 0.4,
         }
       });
 
@@ -59,8 +106,16 @@ export async function processAnalysis(userId: string, username: string, updatePr
     } catch (error: any) {
       lastError = error;
       const message = String(error.message || error);
-      if (message.toLowerCase().includes("not found") || message.toLowerCase().includes("unsupported") || message.toLowerCase().includes("404")) {
-        console.warn(`Model ${modelName} unavailable, trying next model.`);
+      if (
+        message.toLowerCase().includes("not found") ||
+        message.toLowerCase().includes("unsupported") ||
+        message.toLowerCase().includes("404") ||
+        message.toLowerCase().includes("503") ||
+        message.toLowerCase().includes("429") ||
+        message.toLowerCase().includes("high demand") ||
+        message.toLowerCase().includes("unavailable")
+      ) {
+        console.warn(`Model ${modelName} unavailable/busy, trying next model.`);
         continue;
       }
       throw error;
@@ -77,7 +132,20 @@ export async function processAnalysis(userId: string, username: string, updatePr
   }
 
   await updateProgress("Finalizing insights...", 90);
-  const analysis = JSON.parse(aiContent);
+  
+  let cleanJson = aiContent;
+  if (cleanJson.startsWith('```')) {
+    cleanJson = cleanJson.replace(/^```(json)?\n?/, '').replace(/\n?```$/, '');
+  }
+  cleanJson = cleanJson.trim();
+
+  let analysis;
+  try {
+    analysis = JSON.parse(cleanJson);
+  } catch (error) {
+    console.error("Failed to parse JSON. Raw AI Output:", aiContent);
+    throw new Error("AI returned invalid JSON format.");
+  }
 
   const savedResult = await prisma.analysisResult.upsert({
     where: { userId },

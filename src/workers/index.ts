@@ -31,13 +31,13 @@ const worker = new Worker(
       const githubToken = account?.access_token ?? undefined;
       console.log(`🔑 GitHub token found: ${!!githubToken}`);
 
-      await processAnalysis(userId, githubUsername, async (msg, percent) => {
+      const result = await processAnalysis(userId, githubUsername, async (msg, percent) => {
         await job.updateProgress({ msg, percent });
         console.log(`📊 Progress: ${percent}% - ${msg}`);
       }, githubToken);
 
       console.log(`✅ Job ${job.id} completed successfully`);
-      return { success: true };
+      return result;
     } catch (error) {
       console.error(`❌ Job ${job.id} failed:`, error);
       throw error;

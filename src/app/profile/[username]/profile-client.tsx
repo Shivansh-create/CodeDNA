@@ -2,40 +2,32 @@
 
 import { motion } from "framer-motion";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
-import { BrainCircuit, Trophy, Code2, Sparkles, TrendingUp } from "lucide-react";
+import { BrainCircuit, Trophy, Code2, Sparkles, Terminal, Rocket, Building2, History, GitBranch } from "lucide-react";
 
 export default function ProfileClient({ data, user, isOwner = false }: { data: any; user: any; isOwner?: boolean }) {
   const hasAnalysis = Boolean(data);
-  const radarData = [
-    { subject: 'Frontend', A: data?.frontendScore ?? 0, fullMark: 100 },
-    { subject: 'Backend', A: data?.backendScore ?? 0, fullMark: 100 },
-    { subject: 'DevOps', A: data?.devopsScore ?? 0, fullMark: 100 },
-    { subject: 'Architecture', A: data?.architectureScore ?? 0, fullMark: 100 },
-  ];
-
-  const futureTrajectory = data?.futureTrajectory ? (typeof data.futureTrajectory === 'string' ? JSON.parse(data.futureTrajectory) : data.futureTrajectory) : null;
 
   if (!hasAnalysis) {
     return (
-      <div className="min-h-screen bg-black text-white pt-24 pb-12 px-6 overflow-hidden relative">
+      <div className="min-h-screen bg-background text-white pt-24 pb-12 px-6 overflow-hidden relative">
         <div className="max-w-4xl mx-auto space-y-8">
           <header className="text-center md:text-left">
             <h1 className="text-4xl font-bold mb-2">{user.name || user.githubUsername}</h1>
-            <p className="text-indigo-400 text-lg">@{user.githubUsername}</p>
+            <p className="text-primary text-lg">@{user.githubUsername}</p>
           </header>
 
-          <div className="glass p-10 rounded-3xl border border-white/10">
-            <h2 className="text-3xl font-semibold mb-4">Profile ready, but no analysis yet</h2>
+          <div className="glass-panel p-10 rounded-3xl border border-white/10">
+            <h2 className="text-3xl font-semibold mb-4">Profile ready, but no intelligence data</h2>
             <p className="text-zinc-400 mb-6">
-              This developer has a CodeDNA profile, but they have not generated AI analysis yet.
+              This developer has not yet run the AI intelligence scan.
             </p>
             {isOwner ? (
               <p className="text-zinc-200">
-                You can return to your dashboard and click "Start Analysis" to generate your profile report.
+                Return to your dashboard and click "Decode My Identity" to generate your profile.
               </p>
             ) : (
               <p className="text-zinc-200">
-                Come back when they generate their analysis to see the full developer profile.
+                Check back later when they generate their developer DNA.
               </p>
             )}
           </div>
@@ -44,137 +36,202 @@ export default function ProfileClient({ data, user, isOwner = false }: { data: a
     );
   }
 
+  const safeParse = (val: any) => typeof val === 'string' ? JSON.parse(val) : val;
+  const archetype = safeParse(data.archetype) || {};
+  const dna = safeParse(data.developerDna) || {};
+  const career = safeParse(data.careerIntelligence) || {};
+  const timeline = safeParse(data.evolutionTimeline) || [];
+  const projects = safeParse(data.projectIntelligence) || [];
+
+  const radarData = [
+    { subject: 'Frontend', A: data.frontendScore ?? 0, fullMark: 100 },
+    { subject: 'Backend', A: data.backendScore ?? 0, fullMark: 100 },
+    { subject: 'DevOps', A: data.devopsScore ?? 0, fullMark: 100 },
+    { subject: 'Architecture', A: data.architectureScore ?? 0, fullMark: 100 },
+  ];
+
   return (
-    <div className="min-h-screen bg-black text-white pt-24 pb-12 px-6 overflow-hidden relative">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px]" />
+    <div className="min-h-screen bg-background text-white pt-24 pb-12 px-6 overflow-hidden relative">
+      {/* Background Ambience */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute top-[10%] left-[-10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[150px] mix-blend-screen" />
+        <div className="absolute bottom-[20%] right-[-10%] w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px] mix-blend-screen" />
+      </div>
       
-      <div className="max-w-6xl mx-auto space-y-8 relative z-10">
-        <header className="mb-12 text-center md:text-left flex flex-col md:flex-row items-center gap-6">
+      <div className="max-w-6xl mx-auto space-y-12 relative z-10">
+        <header className="mb-12 text-center md:text-left flex flex-col md:flex-row items-center gap-8">
           {user.image ? (
-            <img src={user.image} alt={user.githubUsername} className="w-24 h-24 rounded-full border-4 border-indigo-500/30" />
+            <motion.img 
+              initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+              src={user.image} alt={user.githubUsername} 
+              className="w-32 h-32 rounded-full border-4 border-white/10 shadow-[0_0_40px_rgba(255,255,255,0.1)]" 
+            />
           ) : (
-            <div className="w-24 h-24 rounded-full bg-indigo-500/20 flex items-center justify-center">
-              <Code2 className="w-10 h-10 text-indigo-400" />
-            </div>
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+              className="w-32 h-32 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.05)]"
+            >
+              <Code2 className="w-12 h-12 text-zinc-400" />
+            </motion.div>
           )}
           <div>
-            <h1 className="text-4xl font-bold mb-2">{user.name || user.githubUsername}</h1>
-            <p className="text-xl text-indigo-400 font-medium">@{user.githubUsername} • {data.archetype}</p>
+            <motion.h1 
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+              className="text-5xl font-bold mb-3 tracking-tight"
+            >
+              {user.name || user.githubUsername}
+            </motion.h1>
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+              className="flex items-center gap-3 text-lg"
+            >
+              <span className="text-primary font-medium">@{user.githubUsername}</span>
+              <span className="text-zinc-600">•</span>
+              <span className="text-zinc-300 font-medium">{archetype.name}</span>
+            </motion.div>
           </div>
         </header>
 
-        {/* Top Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="glass p-6 rounded-2xl relative overflow-hidden group border border-white/10 bg-gradient-to-br from-indigo-500/10 to-transparent"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div className="p-3 bg-indigo-500/20 rounded-xl">
-                <Trophy className="w-6 h-6 text-indigo-400" />
-              </div>
-              <span className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
-                {data.overallScore}/100
-              </span>
+        {/* Narrative & Executive Summary */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+          className="glass-panel p-8 md:p-12 rounded-3xl border border-white/5 relative overflow-hidden"
+        >
+          <div className="absolute -top-10 -right-10 opacity-5 blur-[2px] pointer-events-none">
+            <BrainCircuit className="w-64 h-64 text-primary" />
+          </div>
+          
+          <div className="relative z-10 max-w-4xl flex flex-col gap-8">
+            <div className="flex items-center gap-3 text-primary">
+              <Sparkles className="w-5 h-5" />
+              <span className="text-sm font-bold tracking-widest uppercase">AI Identity Narrative</span>
             </div>
-            <h3 className="text-zinc-400 font-medium">Overall Mastery Score</h3>
-          </motion.div>
+            
+            <blockquote className="text-2xl md:text-3xl font-medium text-gradient leading-relaxed border-l-4 border-primary/50 pl-6 md:pl-8">
+              &ldquo;{data.narrative}&rdquo;
+            </blockquote>
+            
+            <div className="w-24 h-1 bg-gradient-to-r from-primary/50 to-transparent rounded-full" />
+            
+            <div className="text-lg text-zinc-300 leading-loose font-light whitespace-pre-line">
+              {data.summary.replace(/\\n/g, '\n')}
+            </div>
+          </div>
+        </motion.div>
 
+        {/* Radar & DNA */}
+        <div className="grid md:grid-cols-2 gap-8">
           <motion.div 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="glass p-6 rounded-2xl border border-white/10 md:col-span-2"
+            initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
+            className="glass p-8 rounded-3xl border border-white/5 flex flex-col items-center"
           >
-            <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-yellow-400" />
-              Executive Summary
+            <h3 className="text-xl font-semibold self-start mb-6 w-full flex items-center gap-3">
+              <Code2 className="w-5 h-5 text-primary" />
+              Developer DNA Radar
             </h3>
-            <p className="text-zinc-300 leading-relaxed text-lg">
-              {data.summary}
-            </p>
-          </motion.div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-            className="glass p-6 rounded-2xl border border-white/10 flex flex-col items-center"
-          >
-            <h3 className="text-xl font-semibold self-start mb-6 w-full border-b border-white/10 pb-4 flex items-center gap-2">
-              <Code2 className="w-5 h-5 text-blue-400" />
-              Skill Radar
-            </h3>
-            <div className="w-full h-[300px]">
+            <div className="w-full h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
-                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                  <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#a1a1aa', fontSize: 14 }} />
+                <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData}>
+                  <PolarGrid stroke="rgba(255,255,255,0.05)" />
+                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#a1a1aa', fontSize: 13, fontWeight: 500 }} />
                   <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                  <Radar name="Skills" dataKey="A" stroke="#818cf8" fill="#818cf8" fillOpacity={0.5} />
+                  <Radar name="Skills" dataKey="A" stroke="var(--color-primary)" fill="var(--color-primary)" fillOpacity={0.3} />
                 </RadarChart>
               </ResponsiveContainer>
             </div>
           </motion.div>
 
           <motion.div 
-            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
+            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}
             className="flex flex-col gap-6"
           >
-            <div className="glass p-6 rounded-2xl border border-white/10">
-              <h3 className="text-xl font-semibold mb-4 text-green-400 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" /> Key Strengths
+            <div className="glass p-8 rounded-3xl border border-white/5">
+              <h3 className="text-lg font-semibold mb-5 text-white flex items-center gap-2">
+                 Technical Traits
               </h3>
-              <ul className="space-y-3">
-                {data.strengths?.map((str: string, i: number) => (
-                  <li key={i} className="flex items-start gap-3 text-zinc-300">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-2 shrink-0" />
+              <div className="flex flex-wrap gap-2">
+                {dna.technicalTraits?.map((str: string, i: number) => (
+                  <span key={i} className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-sm text-primary">
                     {str}
-                  </li>
+                  </span>
                 ))}
-              </ul>
+              </div>
+            </div>
+
+            <div className="glass p-8 rounded-3xl border border-white/5 relative overflow-hidden flex-1">
+              <h3 className="text-lg font-semibold mb-5 text-white flex items-center gap-2">
+                Engineering Focus
+              </h3>
+              <div className="space-y-4">
+                <div>
+                   <p className="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1">Archetype</p>
+                   <p className="text-base text-zinc-200">{archetype.description}</p>
+                </div>
+                <div>
+                   <p className="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1">Ideal Environment</p>
+                   <p className="text-base text-zinc-200">{archetype.idealEnvironment}</p>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
 
-        {futureTrajectory && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-            className="glass p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-purple-500/10 to-transparent mt-6"
+        {/* Evolution Timeline */}
+        {timeline.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
+            className="glass-panel p-10 rounded-3xl border border-white/5"
           >
-            <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <BrainCircuit className="w-6 h-6 text-purple-400" />
-              Future Trajectory Engine
-            </h3>
-            
-            <div className="grid md:grid-cols-3 gap-6 mb-6">
-              <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                <p className="text-zinc-400 text-sm mb-1">Startup Potential</p>
-                <div className="flex items-end gap-2">
-                  <span className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-400">
-                    {futureTrajectory.startupPotential}/100
-                  </span>
-                </div>
-              </div>
-              <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                <p className="text-zinc-400 text-sm mb-1">Enterprise Suitability</p>
-                <div className="flex items-end gap-2">
-                  <span className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
-                    {futureTrajectory.enterpriseSuitability}/100
-                  </span>
-                </div>
-              </div>
-              <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                <p className="text-zinc-400 text-sm mb-1">Open Source Impact</p>
-                <p className="text-lg font-medium text-zinc-200 line-clamp-2">
-                  {futureTrajectory.openSourceTrajectory}
-                </p>
-              </div>
-            </div>
-            <div className="p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-              <p className="text-zinc-300 leading-relaxed">
-                <span className="font-semibold text-indigo-400">Projected Timeline: </span>
-                {futureTrajectory.timeline}
-              </p>
-            </div>
+             <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
+               <History className="w-6 h-6 text-accent" />
+               Engineering Evolution
+             </h3>
+             <div className="space-y-8 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/10 before:to-transparent">
+                {timeline.map((item: any, i: number) => (
+                   <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                     <div className="flex items-center justify-center w-6 h-6 rounded-full border-2 border-background bg-accent text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10" />
+                     <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass p-6 rounded-2xl border border-white/5">
+                       <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-bold text-lg">{item.phase}</h4>
+                          <span className="text-accent font-mono text-sm bg-accent/10 px-2 py-0.5 rounded">{item.year}</span>
+                       </div>
+                       <p className="text-zinc-400 text-sm leading-relaxed">{item.description}</p>
+                     </div>
+                   </div>
+                ))}
+             </div>
+          </motion.div>
+        )}
+
+        {/* AI Project Intelligence */}
+        {projects.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
+            className="space-y-6"
+          >
+             <h3 className="text-2xl font-bold flex items-center gap-3 ml-2">
+               <GitBranch className="w-6 h-6 text-primary" />
+               Project Intelligence
+             </h3>
+             <div className="grid md:grid-cols-2 gap-6">
+                {projects.map((repo: any, i: number) => (
+                   <div key={i} className="glass p-6 rounded-2xl border border-white/5">
+                      <div className="flex justify-between items-start mb-4">
+                         <h4 className="font-bold text-lg text-white truncate pr-4">{repo.repoName}</h4>
+                         <span className="text-primary font-mono text-sm bg-primary/10 px-2 py-1 rounded-lg border border-primary/20 shrink-0">
+                           Score: {repo.score}
+                         </span>
+                      </div>
+                      <p className="text-zinc-300 text-sm leading-relaxed mb-4">
+                        {repo.architectureNotes}
+                      </p>
+                      <div className="pt-4 border-t border-white/5">
+                         <p className="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1">Scalability</p>
+                         <p className="text-sm text-zinc-400">{repo.scalability}</p>
+                      </div>
+                   </div>
+                ))}
+             </div>
           </motion.div>
         )}
       </div>
