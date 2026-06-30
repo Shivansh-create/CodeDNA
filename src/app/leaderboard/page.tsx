@@ -69,7 +69,7 @@ export default async function LeaderboardPage() {
                     )}
                     <div>
                       <h3 className="text-xl font-bold">{result.user.name || result.user.githubUsername}</h3>
-                      <p className="text-indigo-400 font-medium">{result.archetype}</p>
+                      <p className="text-indigo-400 font-medium">{(result.archetype as any)?.name || 'Unknown Archetype'}</p>
                     </div>
                   </div>
                 </div>
